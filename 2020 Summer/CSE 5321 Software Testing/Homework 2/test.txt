@@ -1,0 +1,9 @@
+Time Of Day	Call Length	Call Type
+12:00:00 AM	1	International
+7:59:59 AM	5	Domestic
+8:00:00 AM	10	Conference
+7:00:00 PM	15	
+7:00:01 PM	61	
+9:59:59 PM		
+10:00:00 PM		
+11:59:59 PM		

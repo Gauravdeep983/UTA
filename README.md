@@ -1,2 +1,2 @@
 # UTA
-Assignments/ Projects used academically
+Assignments/ Projects used for academic purposes

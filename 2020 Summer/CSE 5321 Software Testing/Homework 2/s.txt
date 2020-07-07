@@ -1,0 +1,109 @@
+TEST CASES			
+case	Time Of Day	Call Length	Call Type
+1	12:00:00 AM	1	International
+2	12:00:00 AM	5	Domestic
+3	12:00:00 AM	10	Conference
+4	7:59:59 AM	1	Domestic
+5	7:59:59 AM	5	International
+6	7:59:59 AM	10	International
+7	7:59:59 AM	15	Conference
+8	8:00:00 AM	1	Conference
+9	8:00:00 AM	5	International
+10	8:00:00 AM	10	Domestic
+11	7:00:00 PM	5	Conference
+12	7:00:00 PM	15	International
+13	7:00:00 PM	61	Domestic
+14	7:00:01 PM	15	Domestic
+15	7:00:01 PM	61	International
+16	7:00:01 PM	1	Conference
+17	9:59:59 PM	61	Conference
+18	9:59:59 PM	1	International
+19	9:59:59 PM	5	Domestic
+20	10:00:00 PM	1	Domestic
+21	10:00:00 PM	5	Conference
+22	10:00:00 PM	10	International
+23	11:59:59 PM	10	Domestic
+24	11:59:59 PM	15	International
+25	11:59:59 PM	61	Conference
+26	12:00:00 AM	15	~Domestic
+27	12:00:00 AM	61	~International
+28	7:59:59 AM	61	~Domestic
+29	8:00:00 AM	15	~Conference
+30	8:00:00 AM	61	~International
+31	7:00:00 PM	10	~Conference
+32	7:00:00 PM	1	~International
+33	7:00:01 PM	5	~International
+34	7:00:01 PM	10	~Domestic
+35	9:59:59 PM	10	~International
+36	9:59:59 PM	15	~Domestic
+37	10:00:00 PM	15	~International
+38	10:00:00 PM	61	~Domestic
+39	11:59:59 PM	1	~Domestic
+40	11:59:59 PM	5	~Conference
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			

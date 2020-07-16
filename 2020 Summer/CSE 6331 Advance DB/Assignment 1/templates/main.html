@@ -39,10 +39,22 @@
 </div>
 <hr />
 <div class="container">
-  <div class="input-control">
-    <h5>Search for User (Case sensitive)</h5>
-    <input type="text" name="searchuser" placeholder="Chris">
-    <input type="submit" value="Submit">
+  <div class="row">
+    <div class="form-group col-md-6">
+      <!-- User search -->
+      <form action="/search" method="post">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" />
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+    <div class="form-group col-md-6">
+      <!-- Image upload -->
+      <form action="/image-upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" id="img-upload" />
+        <input type="submit" value="Upload" name="upload" class="btn btn-primary btn-sm">
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

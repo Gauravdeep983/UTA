@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% block head %}
+<title>Home</title>
+{% endblock %} {% block body %}
+<!-- https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/ -->
+<div class="container text-center">
+  <img
+    src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/knuth.jpg"
+    alt=""
+  />
+</div>
+<div class="container">
+  <div class="row">
+    {% if table|length>0 %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Person</th>
+            <th scope="col">Year</th>
+            <th scope="col">Picture</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in table %}
+          <tr>
+            <td>{{ data[0] }}</td>
+            <td>{{ data[1] }}</td>
+            <td>{{ data[2] }}</td>
+            <td>{{ data[3] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <h4>No data available..</h4>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <form action="/search" method="post">
+        <h4 class="font-weight-bold">Q6</h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Chris"
+        />
+        <br />
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+    <div class="form-group col-md-6">
+      <form action="/find-keyword" method="post">
+        <h4 class="font-weight-bold">
+          Q7
+        </h4>
+        <label for="name">Keyword</label>
+        <input
+          type="text"
+          name="keyword"
+          placeholder="A humble person"
+          class="form-control"
+        />
+        <br />
+
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <form action="/update-description" method="post">
+        <h4 class="font-weight-bold">Q8</h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Chris"
+        />
+        <label for="name">Description</label>
+        <input
+          type="text"
+          name="description"
+          class="form-control"
+          placeholder="sample text"
+        />
+        <br />
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+    <div class="form-group col-md-6">
+      <form action="/update" method="post">
+        <h4 class="font-weight-bold">
+          Q9: Update
+        </h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Chris"
+          class="form-control"
+        />
+        <br />
+        <input
+          type="submit"
+          name="update"
+          value="Update person"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+      <p>or</p>
+      <form action="/delete" method="post">
+        <h4 class="font-weight-bold">
+          Q9: Delete
+        </h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Chris"
+          class="form-control"
+        />
+        <br />
+        <input
+          type="submit"
+          name="delete"
+          value="Delete"
+          class="btn btn-danger btn-sm"
+        />
+      </form>
+    </div>
+  </div>
+  <hr />
+</div>
+{% endblock %}

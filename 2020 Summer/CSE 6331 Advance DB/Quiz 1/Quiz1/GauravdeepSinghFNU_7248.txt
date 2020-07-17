@@ -1,0 +1,505 @@
+
+Name:
+Last 4 digits ID:
+
+CSE 6331, Cloud Computing					
+
+
+Quiz Q1, 3.30, Summer 2 2020   (c) DL, UTA, 2020
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     ANY VIOLATIONS to scholastic honesty, which include working with others during this quiz, communicating with others during
+     this quiz, giving anyone or recieving from anyone any information during this quiz or for the next 6 hours after completion
+     of this quiz is a honors violation and will result in a -100 points being assessed for this quiz and being reported. 
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, please send the link, raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+	Gauravdeep Singh
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4a. Using the cloud services provider, all functionality possible should be implemented on that provider.
+     (Of course, displaying web pages through a browser and the user interface is "local")
+
+ 4b. Upload all data files (*jpg or *png and *csv, not this quiz) to cloud service. 
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ To recieve credit you MUST show (demo) AND submit the code (text only) on Canvas.
+
+ 5. Show a web page and interface (which resides on the cloud provider) with your 
+    Student ID at the top and below that, your name, at the top of every web page dispayed 
+    (for this quiz). Please use a large font.
+    For this part (question), below that please show Donald Knuth's picture (provided).
+    The cloud service provider is IBM Cloud (BlueMix).
+
+ 6. Through a web interface (page), allow user to give a person's name, and you show the year, 
+    and the corresponding picture (or show "no picture available").
+
+ 7. (Web Page) allow a user to give a keyword and you show all corresponding pictures, and description. 
+
+ 8. (Web page) allow a user to give a name then modify the description, then after the description is modified,
+     you display the corresponding name, picture, and description.
+
+ 9. Allow a user to replace (with an already existing one) or remove an entire entry when given the name.
+    Please implement both functionality.
+
+ 10. Show us, in a link, the application running and we will try it out. Only for parts 5, 6, 7, 8, 9
+
+ 10b. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.
+
+
+app.py:
+import ibm_db
+import os
+from flask import Flask, render_template, url_for, request, redirect
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'blah blah blah blah'
+
+conn = ibm_db.connect("DATABASE=BLUDB;HOSTNAME=dashdb-txn-sbox-yp-dal09-10.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=zgx10325;PWD=nk^ttsk5lffq6v0h;", "", "")
+
+@app.route('/')
+def index():
+    arr=[]
+    query = "SELECT * FROM PERSONS"
+    stmt = ibm_db.exec_immediate(conn, query)
+    data = ibm_db.fetch_tuple(stmt)
+    while data:
+        arr.append(data)
+        data = ibm_db.fetch_tuple(stmt)
+    return render_template('index.html', table=arr)
+
+
+@app.route('/search', methods=['POST', 'GET'])
+def search_user():
+    if request.method == 'POST':
+        first_name = request.form.get("name")
+        if first_name is not None:
+            query = "SELECT * FROM PERSONS WHERE PERSON = '" + first_name + "'"
+        else:
+            print("Empty value")
+
+        stmt = ibm_db.exec_immediate(conn, query)
+        data = ibm_db.fetch_tuple(stmt)
+        return render_template('search-user.html', user=data)
+
+@app.route('/find-keyword',methods=['POST','GET'])
+def find_keyword():
+    if request.method == 'POST':
+        keyword = request.form.get('keyword')
+        query = "SELECT * from PERSONS WHERE DESCRIPTION='" + keyword + "'"
+        print(query)
+        stmt = ibm_db.exec_immediate(conn, query)
+        data = ibm_db.fetch_tuple(stmt)
+        return render_template('q7.html', user=data)
+
+@app.route('/delete',methods=['POST','GET'])
+def delete():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        sql = "DELETE FROM PERSONS WHERE PERSON='"+name+"'"
+        print(sql)
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            return redirect('/')
+        return redirect('/')
+
+@app.route('/update',methods=['POST','GET'])
+def update():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        sql = "SELECT * FROM PERSONS WHERE PERSON='"+name+"'"
+        stmt = ibm_db.exec_immediate(conn, sql)
+        data = ibm_db.fetch_tuple(stmt)
+        if stmt:
+            return render_template('update-user.html', user=data)
+
+@app.route('/update-person',methods=['POST','GET'])
+def update_person():
+    if request.method == 'POST':
+        old = request.form.get('old')
+        name = request.form.get('name')
+        year = request.form.get('year')
+        picture = request.form.get('picture')
+        description = request.form.get('description')
+        sql = "UPDATE PERSONS SET PERSON = '"+name+"', YEAR = "+year+", PICTURE = '"+picture+", DESCRIPTION = '"+description+" WHERE PERSON='"+old+"'"
+        print(sql)
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            return redirect('/')
+        return "didnt work"
+
+# status = ibm_db.close(conn)
+# print(status)
+
+cf_port = os.getenv("PORT")
+if __name__ == '__main__':
+    if cf_port is None:
+        app.run(debug=True)
+    else:
+        app.run(host='0.0.0.0', port=int(cf_port), debug=True)
+
+update-user.html:
+
+{% extends 'base.html' %} {% block head %}
+<title>Q6</title>
+{% endblock %} {% block body %}
+<div class="container">
+    {% if user %}
+    <form action="/update-person" method="post">
+        <h4 class="font-weight-bold">Update person</h4>
+        <label for="name">Person</label>
+        <input type="text" name="name" class="form-control" placeholder="Chris"  />
+        <br>
+        <input type="hidden" name="old" value="{{ user[0] }}">
+        <label for="year">Year</label>
+        <input type="text" name="year" class="form-control" placeholder="Chris"  />
+        <br>
+        <label for="picture">Picture</label>
+        <input type="text" name="picture" class="form-control" placeholder="Chris"  />
+        <br>
+        <label for="description">Description</label>
+        <input type="text" name="description" class="form-control" placeholder="Chris"  />
+        <br>
+
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    {% else %}
+      <h4>No data available</h4>
+    {% endif %}
+</div>
+{% endblock %}
+
+q8.html:
+{% extends 'base.html' %} {% block head %}
+<title>Q8</title>
+{% endblock %} {% block body %}
+<div class="container">
+    {% if data %}
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Picture</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{data[0][0]}}</td>
+            <td>
+              <img
+                src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ data[0][2] }}"
+                onerror="this.onerror=null;this.src='https://adb-assignment1.s3.us-south.cloud-object-storage.appdomain.cloud/no-image-available-icon-26.jpg';"
+                width="150"
+                class="img-fluid"
+              />
+            </td>
+            <td>
+                {{data[0][3]}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {% else %}
+      <h4>No data available</h4>
+    {% endif %}
+</div>
+{% endblock %}
+
+q7:
+{% extends 'base.html' %} {% block head %}
+<title>Q7</title>
+{% endblock %} {% block body %}
+<div class="container">
+    {% if user %}
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Description</th>
+            <th scope="col">Picture</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{user[3]}}</td>
+            <td>
+              <img
+                src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ user[2] }}"
+                onerror="this.onerror=null;this.src='https://adb-assignment1.s3.us-south.cloud-object-storage.appdomain.cloud/no-image-available-icon-26.jpg';"
+                width="150"
+                class="img-fluid"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {% else %}
+      <h4>No data available</h4>
+    {% endif %}
+</div>
+{% endblock %}
+
+base:
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <!-- <h1 class="display-4">Quiz 1</h1> -->
+        <p class="lead">
+          <b>Student ID:</b> 1001827248 <br>
+          <b>Name:</b> FNU Gauravdeep Singh <br>
+        </p>
+      </div>
+    </div>
+    {% block body %}{% endblock %}
+  </body>
+</html>
+
+index.html
+{% extends 'base.html' %} {% block head %}
+<title>Home</title>
+{% endblock %} {% block body %}
+<!-- https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/ -->
+<div class="container text-center">
+  <img
+    src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/knuth.jpg"
+    alt=""
+  />
+</div>
+<div class="container">
+  <div class="row">
+    {% if table|length>0 %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Person</th>
+            <th scope="col">Year</th>
+            <th scope="col">Picture</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in table %}
+          <tr>
+            <td>{{ data[0] }}</td>
+            <td>{{ data[1] }}</td>
+            <td>{{ data[2] }}</td>
+            <td>{{ data[3] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <h4>No data available..</h4>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <form action="/search" method="post">
+        <h4 class="font-weight-bold">Q6</h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Chris"
+        />
+        <br />
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+    <div class="form-group col-md-6">
+      <form action="/find-keyword" method="post">
+        <h4 class="font-weight-bold">
+          Q7
+        </h4>
+        <label for="name">Keyword</label>
+        <input
+          type="text"
+          name="keyword"
+          placeholder="A humble person"
+          class="form-control"
+        />
+        <br />
+
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <form action="/update-description" method="post">
+        <h4 class="font-weight-bold">Q8</h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Chris"
+        />
+        <label for="name">Description</label>
+        <input
+          type="text"
+          name="description"
+          class="form-control"
+          placeholder="sample text"
+        />
+        <br />
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+    <div class="form-group col-md-6">
+      <form action="/update" method="post">
+        <h4 class="font-weight-bold">
+          Q9: Update
+        </h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Chris"
+          class="form-control"
+        />
+        <br />
+        <input
+          type="submit"
+          name="update"
+          value="Update person"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+      <p>or</p>
+      <form action="/delete" method="post">
+        <h4 class="font-weight-bold">
+          Q9: Delete
+        </h4>
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Chris"
+          class="form-control"
+        />
+        <br />
+        <input
+          type="submit"
+          name="delete"
+          value="Delete"
+          class="btn btn-danger btn-sm"
+        />
+      </form>
+    </div>
+  </div>
+  <hr />
+</div>
+{% endblock %}
+
+search-user.html
+{% extends 'base.html' %} {% block head %}
+<title>Q6</title>
+{% endblock %} {% block body %}
+<div class="container">
+    {% if user %}
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Year</th>
+            <th scope="col">Picture</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{user[1]}}</td>
+            <td>
+              <img
+                src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ user[2] }}"
+                onerror="this.onerror=null;this.src='https://adb-assignment1.s3.us-south.cloud-object-storage.appdomain.cloud/no-image-available-icon-26.jpg';"
+                width="150"
+                class="img-fluid"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {% else %}
+      <h4>No image available</h4>
+    {% endif %}
+</div>
+{% endblock %}
+

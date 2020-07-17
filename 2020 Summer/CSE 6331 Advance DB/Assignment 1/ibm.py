@@ -20,7 +20,7 @@ def index():
     while data:
         arr.append(data)
         data = ibm_db.fetch_tuple(stmt)
-    return render_template('main.html', table)
+    return render_template('main.html', table=arr)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search_user():
@@ -35,29 +35,73 @@ def search_user():
         data = ibm_db.fetch_tuple(stmt)
         return render_template('search-user.html', user=data)
 
-@app.route('/image-upload', methods=['POST', 'GET'])
-def image_upload():
-    if request.method == 'POST':
-        first_name = 'Dave'
-        f = request.files['image']
-        filename = secure_filename(f.filename)
-        
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-        query = "UPDATE PEOPLE SET PICTURE = '"+ filename +"'"" WHERE NAME = '" + first_name + "'"
-        if f is not None:
-            try:
-                stmt = ibm_db.exec_immediate(conn, query)
-                if stmt: 
-                    return "Upload successful"
-                else:
-                    return "Didn't work homie"
-            except:
-                print("Failed to upload")
-        else:
-            return "Empty value"
-    else:
-        return "No post"
+@app.route('/show-images',methods=['POST','GET'])
+def show_images_in_range():
+    if request.method == 'POST':
+        salary = request.form.get('salary')
+        list_of_data = []
+        sql = "SELECT * FROM PEOPLE where salary between 0 and "+salary
+        stmt = ibm_db.exec_immediate(conn, sql)
+        result = ibm_db.fetch_tuple(stmt)
+        while result:
+            list_of_data.append(result)
+            result = ibm_db.fetch_tuple(stmt)
+        return render_template('show_images_range.html',data=list_of_data)
+
+@app.route('/change-caption',methods=['POST','GET'])
+def change_keyword():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        caption = request.form.get('caption')
+        query = "UPDATE PEOPLE SET KEYWORDS='" + str(caption) + "' WHERE NAME='" + str(name) + "'"
+        print(query)
+        stmt = ibm_db.exec_immediate(conn, query)
+        while stmt:
+            return redirect('/')
+
+# Change salary
+@app.route('/change-salary',methods=['POST','GET'])
+def change_salary():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        salary = request.form.get('salary')
+        sql = "UPDATE PEOPLE SET SALARY = "+salary+" WHERE NAME ='"+name+"'"
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:            
+            return redirect('/')
+
+# Delete person
+@app.route('/delete-person',methods=['POST','GET'])
+def delete_person():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        sql = "DELETE FROM PEOPLE WHERE NAME ='"+name+"'"
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            return redirect('/')
+
+# Change picture for a name
+@app.route('/update-picture',methods=['POST','GET'])
+def update_picture():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        picture = request.form.get('picture')
+        list_of_data = []
+        sql = "UPDATE PEOPLE SET PICTURE ='"+picture+"' WHERE NAME='"+name+"'"
+        print(sql)
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            sql = "select * from people where name ='"+name+"'"
+            stmt = ibm_db.exec_immediate(conn, sql)
+            result = ibm_db.fetch_tuple(stmt)
+            # print(result)
+            while result:
+                list_of_data.append(result)
+                result = ibm_db.fetch_tuple(stmt)
+            return render_template('update-image.html',data=list_of_data)
+        return render_template('update-image.html',data=list_of_data)
+            
 
 cf_port = os.getenv("PORT")
 if __name__ == '__main__':

@@ -10,6 +10,10 @@
     <div class="container">
         <h4>User: {{ user[0] }}</h4>
         <br>
-        <img src="/static/images/126400.jpg" width="50%" alt="" class="img-fluid">
+        {% if user[4] %}
+        <img src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ user[4] }}" width="50%" alt="" class="img-fluid">
+        {% else %}
+        <h5>No image found</h5>
+        {% endif %}
     </div>
 {% endblock %}

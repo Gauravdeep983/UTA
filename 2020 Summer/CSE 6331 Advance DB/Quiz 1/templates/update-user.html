@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block head %}
+<title>Q6</title>
+{% endblock %} {% block body %}
+<div class="container">
+    {% if user %}
+    <form action="/update-person" method="post">
+        <h4 class="font-weight-bold">Update person</h4>
+        <label for="name">Person</label>
+        <input type="text" name="name" class="form-control" placeholder="Chris"  />
+        <br>
+        <input type="hidden" name="old" value="{{ user[0] }}">
+        <label for="year">Year</label>
+        <input type="text" name="year" class="form-control" placeholder="Chris"  />
+        <br>
+        <label for="picture">Picture</label>
+        <input type="text" name="picture" class="form-control" placeholder="Chris"  />
+        <br>
+        <label for="description">Description</label>
+        <input type="text" name="description" class="form-control" placeholder="Chris"  />
+        <br>
+
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+      </form>
+    {% else %}
+      <h4>No data available</h4>
+    {% endif %}
+</div>
+{% endblock %}

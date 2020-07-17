@@ -9,30 +9,32 @@
 {% block body %}
 <div class="container">
   {% if table|length>0 %}
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Salary</th>
-        <th scope="col">Room</th>
-        <th scope="col">Telephone</th>
-        <th scope="col">Picture</th>
-        <th scope="col">Keywords</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for data in table %}
-      <tr>
-        <td>{{ data[0] }}</td>
-        <td>{{ data[1] }}</td>
-        <td>{{ data[2] }}</td>
-        <td>{{ data[3] }}</td>
-        <td>{{ data[4] }}</td>
-        <td>{{ data[5] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Salary</th>
+          <th scope="col">Room</th>
+          <th scope="col">Telephone</th>
+          <th scope="col">Picture</th>
+          <th scope="col">Keywords</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in table %}
+        <tr>
+          <td>{{ data[0] }}</td>
+          <td>{{ data[1] }}</td>
+          <td>{{ data[2] }}</td>
+          <td>{{ data[3] }}</td>
+          <td>{{ data[4] }}</td>
+          <td>{{ data[5] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% else %}
   <h4>No data available..</h4>
   {% endif %}
@@ -43,16 +45,106 @@
     <div class="form-group col-md-6">
       <!-- User search -->
       <form action="/search" method="post">
+        <h4 class="font-weight-bold">Find picture via person</h4>
         <label for="name">Name</label>
-        <input type="text" name="name" class="form-control" />
+        <input type="text" name="name" class="form-control" placeholder="Chris"  />
+        <br>
         <input type="submit" value="Search" class="btn btn-primary btn-sm" />
       </form>
     </div>
     <div class="form-group col-md-6">
-      <!-- Image upload -->
-      <form action="/image-upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="image" id="img-upload" />
-        <input type="submit" value="Upload" name="upload" class="btn btn-primary btn-sm">
+      <!-- Salary range -->
+      <form action="/show-images" method="post">
+        <h4 class="font-weight-bold">Display all pictures under salary range</h4>
+        <label for="name">Salary</label>
+        <input
+          type="number"
+          name="salary"
+          placeholder="45000"
+          class="form-control"
+          min="0"
+        />
+        <br>
+
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <!-- Change caption -->
+      <form action="/change-caption" method="post">
+        <h4 class="font-weight-bold">Change keywords for user</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Mike"  />
+        <label for="caption">Caption</label>
+        <input type="text" name="caption" class="form-control" placeholder="Faculty member"  />
+        <br>
+        <input
+          type="submit"
+          value="Change caption"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+    </div>
+    <!-- Change caption -->
+    <div class="form-group col-md-6">
+      <form action="/change-salary" method="post">
+        <h4 class="font-weight-bold">Change salary for person</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Jason"  />
+        <label for="salary">Salary</label>
+        <input type="text" name="salary" class="form-control" placeholder="30000"  />
+        <br>
+        <input
+          type="submit"
+          value="Update salary"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <!-- Delete person -->
+      <form action="/delete-person" method="post">
+        <h4 class="font-weight-bold">Delete Person</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Mike" />
+        <br>
+        <input
+          type="submit"
+          value="Delete Person"
+          class="btn btn-danger btn-sm"
+        />
+      </form>
+    </div>
+    <!-- Update picture -->
+    <div class="form-group col-md-6">
+      <form action="/update-picture" method="post">
+        <h4 class="font-weight-bold">Change Picture of User</h4>
+        <label> Name:</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Dave"
+          class="form-control"
+        />
+        <label> Picture:</label>
+        <input
+          type="text"
+          name="picture"
+          placeholder="chris.jpg"
+          class="form-control"
+        />
+        <br>
+        <input
+          type="submit"
+          value="Update Picture"
+          class="btn btn-primary btn-sm"
+        />
       </form>
     </div>
   </div>

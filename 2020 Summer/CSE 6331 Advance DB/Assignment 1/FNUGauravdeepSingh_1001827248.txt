@@ -1,0 +1,264 @@
+CSE 6331 Cloud Computing
+
+Student ID: 1001827248
+Name: FNU Gauravdeep Singh
+Cloud Link: http://gaurav54321.mybluemix.net/
+
+Submission for Assignment 1
+_____________________________________________________________________
+
+1. Search for Chris (Name) and show his picture on a web page.
+@app.route('/search', methods=['POST', 'GET'])
+def search_user():
+    if request.method == 'POST':
+        first_name = request.form.get("name")
+        if first_name is not None:
+            query = "SELECT * FROM PEOPLE WHERE NAME = '" + first_name + "'"
+        else:
+            print("Empty value")
+
+        stmt = ibm_db.exec_immediate(conn, query)
+        data = ibm_db.fetch_tuple(stmt)
+        return render_template('search-user.html', user=data)
+
+ <form action="/search" method="post">
+        <h4 class="font-weight-bold">Find picture via person</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Chris"  />
+        <br>
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+
+<div class="container">
+        <h4>User: {{ user[0] }}</h4>
+        <br>
+        {% if user[4] %}
+        <img src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ user[4] }}" width="50%" alt="" class="img-fluid">
+        {% else %}
+        <h5>No image found</h5>
+        {% endif %}
+    </div>
+
+_____________________________________________________________________
+
+2. Search for (display) all pictures where the salary is less than 99000.
+@app.route('/show-images',methods=['POST','GET'])
+def show_images_in_range():
+    if request.method == 'POST':
+        salary = request.form.get('salary')
+        list_of_data = []
+        sql = "SELECT * FROM PEOPLE where salary between 0 and "+salary
+        stmt = ibm_db.exec_immediate(conn, sql)
+        result = ibm_db.fetch_tuple(stmt)
+        while result:
+            list_of_data.append(result)
+            result = ibm_db.fetch_tuple(stmt)
+        return render_template('show_images_range.html',data=list_of_data)
+
+<form action="/show-images" method="post">
+        <h4 class="font-weight-bold">Display all pictures under salary range</h4>
+        <label for="name">Salary</label>
+        <input
+          type="number"
+          name="salary"
+          placeholder="45000"
+          class="form-control"
+          min="0"
+        />
+        <br>
+
+        <input type="submit" value="Search" class="btn btn-primary btn-sm" />
+      </form>
+
+<div class="container">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Picture</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data|length>0 %} 
+      {% for item in data %}
+      <tr>
+        <td>{{item[0]}}</td>
+        <td>
+          <img
+            src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ item[4] }}"
+            onerror="this.onerror=null;this.src='https://adb-assignment1.s3.us-south.cloud-object-storage.appdomain.cloud/no-image-available-icon-26.jpg';"
+            width="150"
+            class="img-fluid"
+          />
+        </td>
+      </tr>
+      {% endfor %} 
+      {% else %}
+      <tr colspan="6" style="text-align: center;">
+        <td>Name Doesn't Exist</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+ 
+</div>
+
+
+_____________________________________________________________________
+
+3. Add a picture for Dave
+@app.route('/update-picture',methods=['POST','GET'])
+def update_picture():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        picture = request.form.get('picture')
+        list_of_data = []
+        sql = "UPDATE PEOPLE SET PICTURE ='"+picture+"' WHERE NAME='"+name+"'"
+        print(sql)
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            sql = "select * from people where name ='"+name+"'"
+            stmt = ibm_db.exec_immediate(conn, sql)
+            result = ibm_db.fetch_tuple(stmt)
+            # print(result)
+            while result:
+                list_of_data.append(result)
+                result = ibm_db.fetch_tuple(stmt)
+            return render_template('update-image.html',data=list_of_data)
+        return render_template('update-image.html',data=list_of_data)
+
+<form action="/update-picture" method="post">
+        <h4 class="font-weight-bold">Change Picture of User</h4>
+        <label> Name:</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Dave"
+          class="form-control"
+        />
+        <label> Picture:</label>
+        <input
+          type="text"
+          name="picture"
+          placeholder="chris.jpg"
+          class="form-control"
+        />
+        <br>
+        <input
+          type="submit"
+          value="Update Picture"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Picture</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data|length>0 %} {% for item in data %}
+      <tr>
+        <td>{{item[0]}}</td>
+        <td>{{item[4]}}</td>
+        <td>
+          <img
+            src="https://s3.us-east.cloud-object-storage.appdomain.cloud/gd-assignment/{{ item[4] }}"
+            onerror="this.onerror=null;this.src='https://adb-assignment1.s3.us-south.cloud-object-storage.appdomain.cloud/no-image-available-icon-26.jpg';"
+            width="150"
+            class="img-fluid"
+          />
+        </td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr colspan="6" style="text-align: center;">
+        <td>Name Doesn't Exist</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+
+_____________________________________________________________________
+
+4. Remove Dave
+@app.route('/delete-person',methods=['POST','GET'])
+def delete_person():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        sql = "DELETE FROM PEOPLE WHERE NAME ='"+name+"'"
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:
+            return redirect('/')
+
+<form action="/delete-person" method="post">
+        <h4 class="font-weight-bold">Delete Person</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Mike" />
+        <br>
+        <input
+          type="submit"
+          value="Delete Person"
+          class="btn btn-danger btn-sm"
+        />
+      </form>
+
+_____________________________________________________________________
+
+5. Change Jason’s keywords to “Not so nice anymore”
+@app.route('/change-caption',methods=['POST','GET'])
+def change_keyword():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        caption = request.form.get('caption')
+        query = "UPDATE PEOPLE SET KEYWORDS='" + str(caption) + "' WHERE NAME='" + str(name) + "'"
+        print(query)
+        stmt = ibm_db.exec_immediate(conn, query)
+        while stmt:
+            return redirect('/')
+
+<form action="/change-caption" method="post">
+        <h4 class="font-weight-bold">Change keywords for user</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Mike"  />
+        <label for="caption">Caption</label>
+        <input type="text" name="caption" class="form-control" placeholder="Faculty member"  />
+        <br>
+        <input
+          type="submit"
+          value="Change caption"
+          class="btn btn-primary btn-sm"
+        />
+      </form>
+
+_____________________________________________________________________
+
+6. Change Someone’s salary
+@app.route('/change-salary',methods=['POST','GET'])
+def change_salary():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        salary = request.form.get('salary')
+        sql = "UPDATE PEOPLE SET SALARY = "+salary+" WHERE NAME ='"+name+"'"
+        stmt = ibm_db.exec_immediate(conn, sql)
+        if stmt:            
+            return redirect('/')
+
+<form action="/change-salary" method="post">
+        <h4 class="font-weight-bold">Change salary for person</h4>
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Jason"  />
+        <label for="salary">Salary</label>
+        <input type="text" name="salary" class="form-control" placeholder="30000"  />
+        <br>
+        <input
+          type="submit"
+          value="Update salary"
+          class="btn btn-primary btn-sm"
+        />
+      </form>

@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
 
-conn = ibm_db.connect("DATABASE=BLUDB;HOSTNAME=dashdb-txn-sbox-yp-dal09-10.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=zgx10325;PWD=nk^ttsk5lffq6v0h;", "", "")
+conn = ibm_db.connect("hidden")
 
 app = Flask(__name__)
 img_path = 'static/images/'

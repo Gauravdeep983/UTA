@@ -43,12 +43,29 @@
 <div class="container">
   <div class="row">
     <div class="form-group col-md-6">
-      
+      <form action="/eq-within-parameters" method="POST">
+        <label>Latitude: </label>
+        <input type="text" name="lattitude" value="32.7357" /><br />
+        <label>Longitude: </label>
+        <input type="text" name="longitude" value="-97.1081" /><br />
+        <b> Magnitude </b> <br />
+        <label> Min: </label>
+        <input type="number" name="mag_min" value="3.0" step="0.1"/><br />
+        <label> Max:</label>
+        <input type="number" name="mag_max" value="6.5" step="0.1"/><br />
+        <b> Date:</b><br />
+        <label> From:</label>
+        <input type="text" name="from_date" placeholder="YYYY-MM-DD" value="2020-07-13" /><br />
+        <label> To:</label>
+        <input type="text" name="to_date" placeholder="YYYY-MM-DD" value="2020-07-20"/><br />
+        <label> Distance(kms): </label>
+        <input type="number" name="distance" min="0" value="500" /><br />
+        <br />
+        <input type="submit" value="Search" class="btn btn-primary" />
+      </form>
     </div>
-    <div class="form-group col-md-6">
-      
-    </div>
+    <div class="form-group col-md-6"></div>
   </div>
-  <hr>
+  <hr />
 </div>
 {% endblock %}

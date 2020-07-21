@@ -1,6 +1,7 @@
 import ibm_db
 import os
 from flask import Flask, render_template, url_for, request, redirect
+from math import radians, cos, sin, asin, sqrt, atan2
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'blah blah blah blah'
@@ -18,8 +19,8 @@ def index():
         data = ibm_db.fetch_tuple(stmt)
     return render_template('main.html', table=arr)
 
-@app.route('/eqabovemag6',methods=['POST','GET'])
-def eqabovemag6():
+@app.route('/eq-above-mag6',methods=['POST','GET'])
+def eq_above_mag6():
     if request.method =='POST':
         latitude = request.form.get('latitudeValue')
         longitude = request.form.get('longitudeValue')
@@ -52,7 +53,43 @@ def eqabovemag6():
         return render_template('eqmagabove6.html',data=list_of_data,lat=latitude,long=longitude)
 
 
+@app.route('/eq-within-parameters', methods=['POST','GET'])
+def eq_within_parameters():
+    if request.method == 'POST':
+        list_of_data = []
+        latitude = request.form.get('lattitude')
+        longitude = request.form.get('longitude')
+        min_mag = request.form.get('mag_min')
+        max_mag = request.form.get('mag_max')
+        from_date = str(request.form.get('from_date'))
+        to_date = str(request.form.get('to_date'))
+        dist = request.form.get('distance')
+        params = {'latitude' : latitude, 'longitude' : longitude, 'min_mag': min_mag, 'max_mag': max_mag, 'from_date': from_date, 'to_date': to_date, 'distance': dist }
 
+        query = f"SELECT * FROM (SELECT *,\
+            (\
+                (\
+                    (\
+                        acos(\
+                            sin(( {latitude} * 0.01745329251 ))\
+                            *\
+                            sin(( latitude * 0.01745329251 )) + cos(( {latitude} *0.01745329251 ))\
+                            *\
+                            cos(( latitude * 0.01745329251)) * cos((( {longitude} - longitude) * 0.01745329251)))\
+                    ) * 57.2957795131\
+                ) * 60 * 1.1515 * 1.609344\
+            )\
+        as distance FROM EARTHQUAKE WHERE time BETWEEN '{from_date}' and '{to_date}' AND mag BETWEEN {min_mag} and {max_mag}) WHERE distance <= {dist} ORDER BY distance DESC"
+
+        stmt = ibm_db.exec_immediate(conn, query)
+        result = ibm_db.fetch_tuple(stmt)
+        while result:
+            list_of_data.append(result)
+            result = ibm_db.fetch_tuple(stmt)
+        
+        return render_template('eq-parameters.html',data=list_of_data, params=params)
+
+        
 # status = ibm_db.close(conn)
 # print(status)
 

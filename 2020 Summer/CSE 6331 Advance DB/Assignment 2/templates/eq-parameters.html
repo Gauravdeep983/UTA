@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Earthquake params</title>
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <h4>
+    Searched for Latitude : <b>{{params['latitude']}}</b> and
+    <b>Longitude</b> : {{params['longitude']}} between Magnitude between
+    <b>{{params['min_mag']}}</b> and <b>{{params['max_mag']}}</b> and date between
+    <b>{{params['from_date']}}</b> and <b>{{params['to_date']}}</b> under
+    <b>{{params['distance']}} kms</b>
+  </h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Place</th>
+        <th scope="col">Latitude</th>
+        <th scope="col">Longitude</th>
+        <th scope="col">Magitude</th>
+        <th scope="col">Time</th>
+        <th scope="col">Distance (Kms)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data|length>0 %} {% for item in data %}
+      <tr>
+        <td>{{item[13]}}</td>
+        <td>{{item[1]}}</td>
+        <td>{{item[2]}}</td>
+        <td>{{item[4]}}</td>
+        <td>{{item[0]}}</td>
+        <td>{{item[22]}}</td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="6" style="text-align: center;">No data available</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

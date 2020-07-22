@@ -1,0 +1,36 @@
+{% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
+
+<div class="container">
+  <p class="h3">The Current Location</p>
+  <p class="h4">Latitude : {{lat}}</p>
+  <p class="h4">Longitude : {{long}}</p>
+  <p class="h4">Earthquakes within : {{dist}} km</p>
+  <br />
+
+  <table class="table">
+    <thead class="thead-light">
+      <th scope="col">Time</th>
+      <th scope="col">Latitude</th>
+      <th scope="col">Longitude</th>
+      <th scope="col">Place</th>
+      <th scope="col">Magnitude</th>
+      <th scope="col">Distance(in km)</th>
+      <th scope="col">Location Source</th>
+    </thead>
+
+    <tbody>
+      {% for search in search %}
+      <tr>
+        <td>{{search[0]}}</td>
+        <td>{{search[1]}}</td>
+        <td>{{search[2]}}</td>
+        <td>{{search[13]}}</td>
+        <td>{{search[4]}}</td>
+        <td>{{search[22]}}</td>
+        <td>{{search[20]}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

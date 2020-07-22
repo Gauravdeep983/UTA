@@ -19,38 +19,63 @@ def index():
         data = ibm_db.fetch_tuple(stmt)
     return render_template('main.html', table=arr)
 
-@app.route('/eq-above-mag6',methods=['POST','GET'])
-def eq_above_mag6():
-    if request.method =='POST':
-        latitude = request.form.get('latitudeValue')
-        longitude = request.form.get('longitudeValue')
-        list_of_data =[]
-        sql ="SELECT *,\
-        (\
+#Find the nearest earthquake with mag>6
+@app.route('/magnitude',methods=['POST'])
+def magnitude():
+    value=[]
+    lat = request.form.get("lat")
+    long  = request.form.get("long")
+    query = f"SELECT *,\
             (\
                 (\
-                    acos(\
-                        sin(("+latitude+" * 0.01745329251))\
-                        *\
-                        sin((latitude * 0.01745329251)) +\
-                        cos(("+latitude+" * 0.01745329251))\
-                        *\
-                        cos((latitude * 0.01745329251)) \
-                        * \
-                        cos((("+longitude+" - longitude) * 0.01745329251))) \
-                ) * 57.2957795131\
-            ) * 60 * 1.1515 \
-        )\
-        as distance FROM earthquake where mag > 6  ORDER BY Distance asc LIMIT 1"
-# print(sql)
-        stmt = ibm_db.exec_immediate(conn, sql)
-        result = ibm_db.fetch_tuple(stmt)
-# print(result)
-        while result:
-            list_of_data.append(result)
-            result = ibm_db.fetch_tuple(stmt)
-        print(list_of_data)
-        return render_template('eqmagabove6.html',data=list_of_data,lat=latitude,long=longitude)
+                    (\
+                        acos(\
+                            sin(( {lat} * 0.01745329251 ))\
+                            *\
+                            sin(( latitude * 0.01745329251 )) + cos(( {lat} *0.01745329251 ))\
+                            *\
+                            cos(( latitude * 0.01745329251)) * cos((( {long} - longitude) * 0.01745329251)))\
+                    ) * 57.2957795131\
+                ) * 60 * 1.1515\
+            )\
+        as distance FROM earthquake where mag>6 order by distance asc limit 1"
+    stmt1 = ibm_db.exec_immediate(conn, query)
+    result = ibm_db.fetch_both(stmt1)
+    while result:
+        value.append(result)
+        result = ibm_db.fetch_both(stmt1)
+    return render_template('magnitude.html', search=value, lat=lat, long=long)
+
+#Earthquakes within a user-inputted distance
+@app.route('/within-distance',methods=['POST'])
+def within_distance():
+    value=[]
+    lat = request.form.get("lat")
+    long  = request.form.get("long")
+    dist = request.form.get("dist")
+    query = f"SELECT * FROM(\
+        SELECT *,\
+            (\
+                (\
+                    (\
+                        acos(\
+                            sin(( {lat} * 0.01745329251 ))\
+                            *\
+                            sin(( latitude * 0.01745329251 )) + cos(( {lat} *0.01745329251 ))\
+                            *\
+                            cos(( latitude * 0.01745329251)) * cos((( {long} - longitude) * 0.01745329251)))\
+                    ) * 57.2957795131\
+                ) * 60 * 1.1515 * 1.609344\
+            )\
+        as distance FROM earthquake)\
+        where distance <= {dist} order by distance asc"
+
+    stmt1 = ibm_db.exec_immediate(conn, query)
+    result = ibm_db.fetch_both(stmt1)
+    while result:
+        value.append(result)
+        result = ibm_db.fetch_both(stmt1)
+    return render_template('within-distance.html', search=value, lat=lat, long=long, dist=dist)
 
 
 @app.route('/eq-within-parameters', methods=['POST','GET'])
@@ -89,7 +114,38 @@ def eq_within_parameters():
         
         return render_template('eq-parameters.html',data=list_of_data, params=params)
 
-        
+@app.route('/latlong',methods=['POST'])
+def latlong():
+    value=[]
+    lat1 = float(request.form.get("lat1"))
+    long1  = float(request.form.get("long1"))
+    lat2 = float(request.form.get("lat2"))
+    long2  = float(request.form.get("long2"))
+
+    #Set min. latitude
+    if lat1 < lat2:
+        min_lat = lat1
+        max_lat = lat2
+    else:
+        min_lat = lat2
+        max_lat = lat1
+
+    #Set min. longitude
+    if long1 < long2:
+        min_long = long1
+        max_long = long2
+    else:
+        min_long = long2
+        max_long = long1
+    
+    query = f"SELECT * FROM LATLONG WHERE LATITUDE BETWEEN {min_lat} and {max_lat} AND LONGITUDE BETWEEN {min_long} and {max_long}"
+
+    stmt1 = ibm_db.exec_immediate(conn, query)
+    result = ibm_db.fetch_both(stmt1)
+    while result:
+        value.append(result)
+        result = ibm_db.fetch_both(stmt1)
+    return render_template('latlong-results.html', search=value)
 # status = ibm_db.close(conn)
 # print(status)
 

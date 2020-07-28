@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+
+<!-- Task 1:Search Based on ID -->
+<div class="container">
+    <h4 style="font-weight:bold"> Q5:</h4>
+
+    <form action="/qtask1" method="POST">
+        <label> ID: </label> <input type="text" name="idValue" value="nc73429581">
+        <input type="submit" value="Show Details">
+    </form>
+    <br>
+</div>
+
+<hr>
+<div class="container">
+    <h4 style="font-weight:bold"> Q6:</h4>
+
+    <form action="/qtask6" method="POST">
+        <label> Latitude 1: </label> <input type="text" name="latitudeValueOne" value="59.9826" required> <br>
+        <label> Longitude 1: </label> <input type="text" name="longitudeValueOne" value="-153.5016" required> <br>
+        <label> Latitude 2: </label> <input type="text" name="latitudeValueTwo" value="64.7697" required> <br>
+        <label> Longitude 2: </label> <input type="text" name="longitudeValueTwo" value="-152.4537" required> <br>
+        <label> Depth Min : </label> <input type="text" name="depthFrom" value="10" required> <br>
+        <label> Depth Max : </label> <input type="text" name="depthTo" value="50" required> <br>
+        <input type="submit" value="Show Details">
+    </form>
+    <br>
+</div>
+
+<div class="container">
+    <h4 style="font-weight:bold"> Q7:</h4>
+
+    <form action="/qtask7" method="POST">
+        <label> Location: </label> <input type="text" name="locationValue" value="Alaska" required> <br>
+        <label> Depth Min : </label> <input type="text" name="depthFrom" value="10" required> <br>
+        <label> Depth Max : </label> <input type="text" name="depthTo" value="50" required> <br>
+        <label> Distance : </label> <input type="text" name="distanceValue" value="550" required> <br>
+        <input type="submit" value="Show Details">
+    </form>
+    <br>
+</div>
+
+<hr>
+
+
+<div class="container">
+    <h4 style="font-weight:bold"> Q8</h4>
+
+    <form action="/qtask8" method="POST">
+        <label> Latitude 1: </label> <input type="text" name="latitudeValueOne" value="59.9826" required> <br>
+        <label> Longitude 1: </label> <input type="text" name="longitudeValueOne" value="-153.5016" required> <br>
+        <label> Latitude 2: </label> <input type="text" name="latitudeValueTwo" value="64.7697" required> <br>
+        <label> Longitude 2: </label> <input type="text" name="longitudeValueTwo" value="-152.4537" required> <br>
+        <label> N : </label> <input type="text" name="NValue" value="5" required> <br>
+        <input type="submit" value="Show Details">
+    </form>
+    <br>
+</div>
+
+
+
+
+{% endblock %}

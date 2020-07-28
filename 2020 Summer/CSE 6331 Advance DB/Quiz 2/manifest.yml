@@ -1,0 +1,4 @@
+  applications:
+  - name: nishanthadb
+    random-route: true
+    memory: 64M

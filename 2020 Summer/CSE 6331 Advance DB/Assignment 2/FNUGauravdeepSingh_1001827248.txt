@@ -1,29 +1,13 @@
-import ibm_db
-import os
-from flask import Flask, render_template, url_for, request, redirect
-from math import radians, cos, sin, asin, sqrt, atan2
+CSE 6331 Cloud Computing
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'blah blah blah blah'
+Student ID: 1001827248
+Name: FNU Gauravdeep Singh
+Cloud Link: http://gaurav54321.mybluemix.net/
 
-#IBM DB2 connection string
-conn = ibm_db.connect("DATABASE=BLUDB;HOSTNAME=dashdb-txn-sbox-yp-dal09-10.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=zgx10325;PWD=nk^ttsk5lffq6v0h;", "", "")
+Submission for Assignment 2
+_____________________________________________________________________
 
-#Azure connection string
-
-
-@app.route('/')
-def index():
-    arr=[]
-    query = "SELECT * FROM EARTHQUAKE LIMIT 10"
-    stmt = ibm_db.exec_immediate(conn, query)
-    data = ibm_db.fetch_tuple(stmt)
-    while data:
-        arr.append(data)
-        data = ibm_db.fetch_tuple(stmt)
-    return render_template('main.html', table=arr)
-
-#Find the nearest earthquake with mag>6
+1. Find the nearest earthquake with magnitude greater than 6
 @app.route('/magnitude',methods=['POST'])
 def magnitude():
     value=[]
@@ -50,7 +34,39 @@ def magnitude():
         result = ibm_db.fetch_both(stmt1)
     return render_template('magnitude.html', search=value, lat=lat, long=long)
 
-#Earthquakes within a user-inputted distance
+<div class="container">
+  <p class="h3">The Current Location</p>
+  <p class="h4">Latitude : {{lat}}</p>
+  <p class="h4">Longitude : {{long}}</p>
+  <br />
+
+  <table class="table">
+    <thead class="thead-light">
+      <th scope="col">Time</th>
+      <th scope="col">Latitude</th>
+      <th scope="col">Longitude</th>
+      <th scope="col">Place</th>
+      <th scope="col">Distance(in miles)</th>
+      <th scope="col">Location Source</th>
+    </thead>
+
+    <tbody>
+      {% for search in search %}
+      <tr>
+        <td>{{search[0]}}</td>
+        <td>{{search[1]}}</td>
+        <td>{{search[2]}}</td>
+        <td>{{search[13]}}</td>
+        <td>{{search[22]}}</td>
+        <td>{{search[20]}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+_____________________________________________________________________
+
+2. Earthquakes within a user-inputted distance.
 @app.route('/within-distance',methods=['POST'])
 def within_distance():
     value=[]
@@ -81,7 +97,43 @@ def within_distance():
         result = ibm_db.fetch_both(stmt1)
     return render_template('within-distance.html', search=value, lat=lat, long=long, dist=dist)
 
+<div class="container">
+  <p class="h3">The Current Location</p>
+  <p class="h4">Latitude : {{lat}}</p>
+  <p class="h4">Longitude : {{long}}</p>
+  <p class="h4">Earthquakes within : {{dist}} km</p>
+  <br />
 
+  <table class="table">
+    <thead class="thead-light">
+      <th scope="col">Time</th>
+      <th scope="col">Latitude</th>
+      <th scope="col">Longitude</th>
+      <th scope="col">Place</th>
+      <th scope="col">Magnitude</th>
+      <th scope="col">Distance(in km)</th>
+      <th scope="col">Location Source</th>
+    </thead>
+
+    <tbody>
+      {% for search in search %}
+      <tr>
+        <td>{{search[0]}}</td>
+        <td>{{search[1]}}</td>
+        <td>{{search[2]}}</td>
+        <td>{{search[13]}}</td>
+        <td>{{search[4]}}</td>
+        <td>{{search[22]}}</td>
+        <td>{{search[20]}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+_____________________________________________________________________
+
+3. User inputted latitude, longitude, magnitude range, date and distance
 @app.route('/eq-within-parameters', methods=['POST','GET'])
 def eq_within_parameters():
     if request.method == 'POST':
@@ -118,6 +170,47 @@ def eq_within_parameters():
         
         return render_template('eq-parameters.html',data=list_of_data, params=params)
 
+
+<div class="container">
+  <h4>
+    Searched for Latitude : <b>{{params['latitude']}}</b> and
+    <b>Longitude</b> : {{params['longitude']}} between Magnitude between
+    <b>{{params['min_mag']}}</b> and <b>{{params['max_mag']}}</b> and date between
+    <b>{{params['from_date']}}</b> and <b>{{params['to_date']}}</b> under
+    <b>{{params['distance']}} kms</b>
+  </h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Place</th>
+        <th scope="col">Latitude</th>
+        <th scope="col">Longitude</th>
+        <th scope="col">Magitude</th>
+        <th scope="col">Time</th>
+        <th scope="col">Distance (Kms)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data|length>0 %} {% for item in data %}
+      <tr>
+        <td>{{item[13]}}</td>
+        <td>{{item[1]}}</td>
+        <td>{{item[2]}}</td>
+        <td>{{item[4]}}</td>
+        <td>{{item[0]}}</td>
+        <td>{{item[22]}}</td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="6" style="text-align: center;">No data available</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+_____________________________________________________________________
+
+4. All earthquakes between Two-pairs of latitudes and longitudes
 @app.route('/latlong',methods=['POST'])
 def latlong():
     value=[]
@@ -150,12 +243,28 @@ def latlong():
         value.append(result)
         result = ibm_db.fetch_both(stmt1)
     return render_template('latlong-results.html', search=value)
-# status = ibm_db.close(conn)
-# print(status)
 
-cf_port = os.getenv("PORT")
-if __name__ == '__main__':
-    if cf_port is None:
-        app.run(debug=True)
-    else:
-        app.run(host='0.0.0.0', port=int(cf_port), debug=True)
+<div class="container">
+  <table class="table">
+    <thead class="thead-light">
+      <th scope="col">COUNTRY</th>
+      <th scope="col">LATITUDE</th>
+      <th scope="col">LONGITUDE</th>
+      <th scope="col">NAME</th>
+    </thead>
+
+    <tbody>
+      {% for search in search %}
+      <tr>
+        <td>{{search[0]}}</td>
+        <td>{{search[1]}}</td>
+        <td>{{search[2]}}</td>
+        <td>{{search[3]}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+_____________________________________________________________________
+
+

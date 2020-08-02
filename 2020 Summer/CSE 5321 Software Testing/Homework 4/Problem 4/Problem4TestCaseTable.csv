@@ -1,0 +1,15 @@
+1,TRUE,212.1,4999.90,FullySterilized,10-11-12-13-14-22,stmts 9-14 TTT
+2,FALSE,212.1,4999.90,SomeSterilized,10-21-22,
+3,TRUE,100.1,3499.90,PartialSterilized,10-11-16-17-18-19-22,stmts 16-19 TTT
+4,TRUE,212.1,3499.90,NoSterilization,10-11-12-22,stmts 9-14 TFT
+5,TRUE,100,3499.90,NoSterilization,10-11-16-22,stmts 16-19 FTT
+6,TRUE,212.1,5000.00,NoSterilization,10-11-12-13-22,stmts 9-14 TTF
+7,TRUE,100.1,1900.00,NoSterilization,10-11-16-17-22,stmts 16-19 TFT
+8,TRUE,100.1,3500.00,NoSterilization,10-11-16-17-22,stmts 16-19 TTF
+9,TRUE,212,4999.90,NoSterilization,10-11-16-17-18-22,stmts 9-14 FTT
+10,TRUE,212.1,3500.00,FullySterilized,-,TTT 2nd BV for stmts 9-14
+11,TRUE,100.1,1900.10,PartialSterilized,-,TTT 2nd BV for stmts 16-19
+12,TRUE,0,3499.90,NoSterilization,-,ER temperature
+13,TRUE,500,3499.90,NoSterilization,-,ER temperature
+14,TRUE,212.1,0,NoSterilization,-,ER pressure
+15,TRUE,212.1,10000.00,NoSterilization,-,ER pressure

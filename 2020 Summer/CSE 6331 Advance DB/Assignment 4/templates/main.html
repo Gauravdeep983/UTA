@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Home</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  {% if table|length>0 %}
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Salary</th>
+          <th scope="col">Room</th>
+          <th scope="col">Telephone</th>
+          <th scope="col">Picture</th>
+          <th scope="col">Keywords</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in table %}
+        <tr>
+          <td>{{ data[0] }}</td>
+          <td>{{ data[1] }}</td>
+          <td>{{ data[2] }}</td>
+          <td>{{ data[3] }}</td>
+          <td>{{ data[4] }}</td>
+          <td>{{ data[5] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <h4>No data available..</h4>
+  {% endif %}
+</div>
+<div class="container">
+  <div class="row">
+    <div class="form-group col-md-12">
+      <form action="/" method="post"></form>
+    </div>
+  </div>
+  <hr />
+</div>
+{% endblock %}

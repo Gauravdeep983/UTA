@@ -16,7 +16,7 @@
         var data = google.visualization.arrayToDataTable({{table|safe}});
 
         var options = {
-          title: "Population of Largest U.S. Cities",
+          title: "Earthquakes with {{step}} magnitude increment",
           chartArea: { width: "50%" },
           hAxis: {
             title: "Total Population",
@@ -44,7 +44,7 @@
         var data = google.visualization.arrayToDataTable({{table|safe}});
 
         var options = {
-          title: 'Earthquakes with 0.1 magnitude increment'
+          title: 'Earthquakes with {{step}} magnitude increment'
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -52,34 +52,13 @@
         chart.draw(data, options);
       }
     </script>
-    <script>
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable({{table|safe}});
-
-        var options = {
-          title: 'Age vs. Weight comparison',
-          hAxis: {title: 'Age', minValue: 0, maxValue: 15},
-          vAxis: {title: 'Weight', minValue: 0, maxValue: 15},
-          legend: 'none'
-        };
-
-        var chart = new google.visualization.ScatterChart(document.getElementById('scatter_chart_div'));
-
-        chart.draw(data, options);
-      }
-    </script>
+    
   </head>
   <body>
     <div class="container">
-      <div id="chart_div" style="width: 75%; height: 1500px;"></div>
+      <div id="chart_div" style="width: 75%; min-height: 700px"></div>
       <br />
       <div id="piechart" style="width: 75%; height: 600px;"></div>
-      <br />
-      <div id="scatter_chart_div" style="width: 75%; height: 700px;"></div>
-
     </div>
   </body>
 </html>

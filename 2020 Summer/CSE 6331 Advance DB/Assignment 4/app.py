@@ -1,6 +1,7 @@
 import pyodbc
 import ibm_db
 # import pypyodbc
+import random
 import os
 import string
 from flask import Flask, render_template, url_for, request
@@ -25,42 +26,61 @@ def index():
     return render_template('main.html')
 
 
-@app.route('/barchart')
+@app.route('/barchart', methods=["POST"])
 def barchart():
-    start_mag = magnitudefrom = 1.0
-    magnitudeto = 9.0
-    N = 100
-    step = 0.1
-    list_of_data = [['Magnitude Range','Count']]
+    start_mag = magnitudefrom = float(request.form.get("mag_from"))
+    magnitudeto = float(request.form.get("mag_to"))
+    step = float(request.form.get("step"))
+    list_of_data = [['Magnitude Range','Count', {'role':'style'}]]
     loop = int(0)
-    while (start_mag < magnitudeto) and (loop<N):
+    while (start_mag < magnitudeto):
         end_mag = start_mag+step
         values=[]
-        sql = f"(SELECT count(*)\
-        FROM earthquake where (mag between {str(round(start_mag,2))} and {str(round(end_mag,2))}) ) "
-        # print(sql)
+        sql = f"(SELECT count(*) FROM earthquake where (mag between {str(round(start_mag,2))} and {str(round(end_mag,2))}) ) "
+
         stmt = ibm_db.exec_immediate(conn, sql)
         data = ibm_db.fetch_tuple(stmt)
         if data:
             values.append(str(round(start_mag,2))+"-"+str(round(end_mag,2)))
-            #data = ibm_db.fetch_tuple(stmt)
             values.append(int(data[0]))
+            values.append("%06x" % random.randint(0, 0xFFFFFF))
             list_of_data.append(values)
         start_mag = start_mag+step
         loop+=1    
-    return render_template('barchart.html', table=list_of_data)
+    return render_template('barchart.html', table=list_of_data, increment=step)
 
-@app.route('/scatterchart')
-def scatter_chart():    
-    pop_min = int(1*1000);
-    pop_max = int(6*1000);
-    sql = f"SELECT * FROM Voter WHERE TotalPop BETWEEN {pop_min} AND {pop_max}"
+@app.route('/scatterchart', methods=["POST", "GET"])
+def scatter_chart():  
+    pop_min = int(request.form.get("pop_min"))*1000;
+    pop_max = int(request.form.get("pop_max"))*1000;
+    arr = [['Total Population', 'Registered Voters', {'role':'tooltip'}]]  
+    sql = f"SELECT StateName, Totalpop, Registered FROM Voter WHERE TotalPop BETWEEN {pop_min} AND {pop_max}"
     stmt = ibm_db.exec_immediate(conn, sql)
     data = ibm_db.fetch_tuple(stmt)
-    if data:
-        
+    while data:
+        total_pop = float(data[1])/1000
+        reg_voters = float(data[2])/1000
+        tooltip = str(data[0])+'\nTotal pop: '+str(total_pop)+'\nReg. voters: '+ str(reg_voters)
+        arr.append([total_pop, reg_voters, tooltip])
+        data = ibm_db.fetch_tuple(stmt)
+    return render_template('/scatterchart.html', table=arr, pop_max=pop_max)
 
-    return render_template('scatterchart.html')
+@app.route('/linechart', methods=["POST", "GET"])
+def linechart(): 
+    pop_min = int(request.form.get("pop_min"))*1000;
+    pop_max = int(request.form.get("pop_max"))*1000;
+    arr = []
+    sql = f"SELECT StateName, Totalpop, Registered FROM Voter WHERE TotalPop BETWEEN {pop_min} AND {pop_max}"
+    stmt = ibm_db.exec_immediate(conn, sql)
+    data = ibm_db.fetch_tuple(stmt)
+    while data:
+        total_pop = float(data[1])/1000
+        reg_voters = float(data[2])/1000
+        # tooltip = str(data[0])+'\nTotal pop: '+str(total_pop)+'\nReg. voters: '+ str(reg_voters)
+        arr.append([total_pop, reg_voters])
+        data = ibm_db.fetch_tuple(stmt)
+    return render_template('/linechart.html', data=arr)
+
 
 cf_port = os.getenv("PORT")
 if __name__ == '__main__':

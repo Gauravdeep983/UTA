@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      google.charts.load("current", { packages: ["corechart", "bar"] });
+      google.charts.setOnLoadCallback(drawBasic);
+
+      function drawBasic() {
+        var data = google.visualization.arrayToDataTable({{table|safe}});
+
+        var options = {
+          title: "Earthquakes with {{step}} magnitude increment",
+          chartArea: { width: "50%" },
+          hAxis: {
+            title: "Total Population",
+            minValue: 0,
+          },
+          vAxis: {
+            title: "City",
+          },
+        };
+
+        var chart = new google.visualization.BarChart(
+          document.getElementById("chart_div")
+        );
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable({{table|safe}});
+
+        var options = {
+          title: 'Earthquakes with {{step}} magnitude increment'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <div id="chart_div" style="width: 75%; min-height: 700px"></div>
+      <br />
+      <div id="piechart" style="width: 75%; height: 600px;"></div>
+    </div>
+  </body>
+</html>

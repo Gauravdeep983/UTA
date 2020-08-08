@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Home</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <div class="row">
+    <div class="form-group col-md-12">
+      <h4>Q6</h4>
+        <form action="/q6" method="POST">
+            <label for="">Country: </label>
+            <input type="text" value="Italy" name="country">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    <br>
+    <div class="form-group col-md-12">
+      <h4>Q8</h4>
+      <form action="/q8" method="POST">
+        <label for="">Volcano Min: </label>
+        <input type="number" value="10104" name="volcano_min">
+        <label for="">Volcano Max: </label>
+        <input type="number" value="40105" name="volcano_max">
+        <input type="submit" value="Search">
+    </form>
+    </div>
+    <br>
+    <div class="form-group col-md-12">
+    </div>
+  </div>
+  <hr />
+</div>
+{% endblock %}

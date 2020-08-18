@@ -1,6 +1,5 @@
 import pyodbc
 import ibm_db
-# import pypyodbc
 import random
 import os
 import string

@@ -1,0 +1,222 @@
+CSE 6331 Cloud Computing
+
+Student ID: 1001827248
+Name: FNU Gauravdeep Singh
+
+Submission for Assignment 4
+_____________________________________________________________________
+
+1. Barchart, piechart of earthquakes with inputted magnitude range and step
+
+@application.route('/barchart', methods=["POST"])
+def barchart():
+    start_mag = magnitudefrom = float(request.form.get("mag_from"))
+    magnitudeto = float(request.form.get("mag_to"))
+    step = float(request.form.get("step"))
+    list_of_data = [['Magnitude Range','Count', {'role':'style'}]]
+    loop = int(0)
+    while (start_mag < magnitudeto):
+        end_mag = start_mag+step
+        values=[]
+        sql = f"(SELECT count(*) FROM earthquake where (mag between {str(round(start_mag,2))} and {str(round(end_mag,2))}) ) "
+
+        stmt = ibm_db.exec_immediate(conn, sql)
+        data = ibm_db.fetch_tuple(stmt)
+        if data:
+            values.applicationend(str(round(start_mag,2))+"-"+str(round(end_mag,2)))
+            values.applicationend(int(data[0]))
+            values.applicationend("%06x" % random.randint(0, 0xFFFFFF))
+            list_of_data.applicationend(values)
+        start_mag = start_mag+step
+        loop+=1    
+    return render_template('barchart.html', table=list_of_data, increment=step)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      google.charts.load("current", { packages: ["corechart", "bar"] });
+      google.charts.setOnLoadCallback(drawBasic);
+
+      function drawBasic() {
+        var data = google.visualization.arrayToDataTable({{table|safe}});
+
+        var options = {
+          title: "Earthquakes with {{step}} magnitude increment",
+          chartArea: { width: "50%" },
+          hAxis: {
+            title: "Total Population",
+            minValue: 0,
+          },
+          vAxis: {
+            title: "City",
+          },
+        };
+
+        var chart = new google.visualization.BarChart(
+          document.getElementById("chart_div")
+        );
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable({{table|safe}});
+
+        var options = {
+          title: 'Earthquakes with {{step}} magnitude increment'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <div id="chart_div" style="width: 75%; min-height: 700px"></div>
+      <br />
+      <div id="piechart" style="width: 75%; height: 600px;"></div>
+    </div>
+  </body>
+</html>
+
+_____________________________________________________________________
+
+2. Scatter chart of voting population vs registered voters from all states
+@application.route('/scatterchart', methods=["POST", "GET"])
+def scatter_chart():  
+    pop_min = int(request.form.get("pop_min"))*1000;
+    pop_max = int(request.form.get("pop_max"))*1000;
+    arr = [['State', 'Registered Voters', {'role':'tooltip'}]]  
+    sql = f"SELECT StateName, Totalpop, Registered FROM Voter WHERE TotalPop BETWEEN {pop_min} AND {pop_max}"
+    stmt = ibm_db.exec_immediate(conn, sql)
+    data = ibm_db.fetch_tuple(stmt)
+    while data:
+        total_pop = float(data[1])/1000
+        reg_voters = float(data[2])/1000
+        tooltip = str(data[0])+'\nTotal pop: '+str(total_pop)+'\nReg. voters: '+ str(reg_voters)
+        arr.applicationend([total_pop, reg_voters, tooltip])
+        data = ibm_db.fetch_tuple(stmt)
+    return render_template('/scatterchart.html', table=arr, pop_max=pop_max)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      google.charts.load("current", { packages: ["corechart"] });
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable({{table|safe}});
+        var options = {
+          title: "Total population vs Registered voters (in millions)",
+          hAxis: { title: "Total Population", minValue: 0 },
+          vAxis: { title: "Registered voters", minValue: 0 },
+          legend: "none",
+        };
+
+        var chart = new google.visualization.ScatterChart(
+          document.getElementById("chart_div")
+        );
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+        <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    </div>
+  </body>
+</html>
+
+_____________________________________________________________________
+
+3. Line chart of the above task
+@application.route('/linechart', methods=["POST", "GET"])
+def linechart(): 
+    pop_min = int(request.form.get("pop_min"))*1000;
+    pop_max = int(request.form.get("pop_max"))*1000;
+    arr = []
+    sql = f"SELECT StateName, Totalpop, Registered FROM Voter WHERE TotalPop BETWEEN {pop_min} AND {pop_max}"
+    stmt = ibm_db.exec_immediate(conn, sql)
+    data = ibm_db.fetch_tuple(stmt)
+    while data:
+        total_pop = float(data[1])/1000
+        reg_voters = float(data[2])/1000
+        # tooltip = str(data[0])+'\nTotal pop: '+str(total_pop)+'\nReg. voters: '+ str(reg_voters)
+        arr.applicationend([total_pop, reg_voters])
+        data = ibm_db.fetch_tuple(stmt)
+    return render_template('/linechart.html', data=arr)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      google.charts.load("current", { packages: ["corechart", "line"] });
+      google.charts.setOnLoadCallback(drawBasic);
+
+      function drawBasic() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Total Population');
+        data.addColumn('number', 'Registered voters');
+        data.addRows({{data|safe}});
+
+        var options = {
+          curveType: 'function',
+          hAxis: {
+            title: "Total Population",
+          },
+          vAxis: {
+            title: "Registered voters",
+          },
+        };
+
+        var chart = new google.visualization.LineChart(
+          document.getElementById("chart_div")
+        );
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    </div>
+  </body>
+</html>
+
+_____________________________________________________________________
+
+

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Teacher</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <div class="container">
+    <h4>Teacher page</h4>
+    <br>
+    <p>Name = {{name}}</p>
+    <br /><br />
+    <form action="/teacher" method="POST">
+      <p>Question:</p>
+      <input type="hidden" name="name" value="{{name}}">
+      <textarea name="question" cols="30" rows="2"></textarea>
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+  <br />
+  <br />
+  {% endblock %}
+</div>

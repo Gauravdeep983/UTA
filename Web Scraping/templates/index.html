@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Index</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <div class="row">
+    <form action="/scrape" method="GET">
+      <input type="submit" class="btn btn-primary" value="Scrape" />
+    </form>
+  </div>
+</div>
+{% endblock %}

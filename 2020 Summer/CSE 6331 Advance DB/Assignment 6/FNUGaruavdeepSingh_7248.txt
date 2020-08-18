@@ -1,0 +1,188 @@
+
+Name: FNU Gauravdeep Singh
+Last 4 digits ID: 7248
+
+CSE 6331, Cloud Computing					
+
+Quiz Q6, 3.30, Summer 2020   (c) DL, UTA, 2020
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     ANY VIOLATIONS to scholastic honesty, which include working with others during this quiz, communicating with others during
+     this quiz, giving anyone or recieving from anyone any information during this quiz or for the next 6 hours after completion
+     of this quiz is a honors violation and will result in a -100 points being assessed for this quiz and being reported. 
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, please send the link, raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+	G
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4a. Using the cloud services provider, all functionality possible should be implemented on that provider.
+     (Of course, displaying web pages through a browser and the user interface is "local")
+
+ 4b. Upload all data files (not this quiz) to cloud service. 
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ To recieve credit you MUST show (demo) AND submit the code (text only) on Canvas.
+
+ Your job is to create a simple teacher/student game. To ensure privacy, security and safety for both teacher and student, 
+ each will have a browser interface to separate instances. So you must have at least two instances (one for the student, 
+ another for the teacher), but you may have more, if you wish.
+ The game is played as follows:
+ First the teacher enters their name (up to 20 characters) on the teacher page. Then the student enters their name 
+ (student name) (20 characters) on the student page.
+ Once both have entered their names the other will see both names on each game web page that shows: 
+ For the teacher, the ability to ask one single line text questions, such as
+ "What is 2 + 2 =" or "Who is Alan Turing?" and that question is presented to the student on the student's page.
+ Then the student tries to answer (in a two line text box). That student answer is sent (back) to the teacher 
+ who gives a grade (score) from 0 to 10, for each question. 
+ That score as well as the total, cumulative score is sent back to the student.
+ You should also show an "average" score for the student, that is if the student scored 10,8, and 9 on the first three
+ questions, the average is 9.
+ These games should be 30 seconds to 2 minute durations (not enforced), but to assist running the game, please show the elapsed time 
+ (in seconds) on each screen (that is starting at time 1 second, then increment that count every second.)
+ Either the student or the teacher should be able to "gracefully" terminate the game (button click or similar) 
+ which tells (informs) the other side that the game is over, and final scores (cumulative score, average, elapsed time.)
+ Please note, that this requires that the teacher ask a question first, wait for a responce, grade it, send back to student, 
+ then repeat.
+
+
+  5. Show a web page and interface (which resides on the cloud provider) with your name,
+     and below that, Student ID at the top of every web page dispayed 
+     (for this quiz). 
+     Please use a large font.
+    
+     The cloud service provider is Amazon AWS. 
+
+  6. Show the game pages (web interfaces) and the scores, and second timer, on different browser instances.
+     (Don't need the game implemented, but require user enters name)
+
+  7. Show the game.
+
+ 10. Show us, in a link, the application (game) running and we will try it out. Only for parts 6, 7
+
+ 11. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.
+
+
+
+Task 1:
+
+@application.route('/q6', methods=["POST", "GET"])
+def q6(): 
+    cur = engine.cursor();
+    name = request.form.get("name")
+    isTeacher = request.form.get("isTeacher")
+
+    if(isTeacher == 'yes'):
+        role = "teacher"
+        id = random.randint(1,10000)
+        cur.execute("INSERT INTO public.user(id, username, role) VALUES(%s, %s, %s)", (id, name, role))
+        engine.commit()
+        return render_template("teacher.html", name=name)
+    else:
+        role = "student"
+        id = random.randint(1,10000)
+        cur.execute("INSERT INTO public.user(id, username, role) VALUES(%s, %s, %s)", (id, name, role))
+        engine.commit()
+        return render_template("student.html", name=name)
+
+@application.route('/teacher', methods=["POST", "GET"])
+def teacher():
+    cur = engine.cursor();
+    id = random.randint(1,10000)
+    name = request.form.get("name")
+    question = request.form.get("question")
+    sql = f"SELECT id, username, role FROM public.user WHERE username = '{name}'"
+    cur.execute(sql)
+    teacher = cur.fetchone()
+    answer = "no"
+    cur.execute("INSERT INTO public.questions(id, question, teacher, answer) VALUES (%s, %s, %s, %s)", (id, question, name, answer))
+    engine.commit()
+
+    return render_template('teacher.html', name=name)
+
+
+
+Teacher.html
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Teacher</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <div class="container">
+    <h4>Teacher page</h4>
+    <br>
+    <p>Name = {{name}}</p>
+    <br /><br />
+    <form action="/teacher" method="POST">
+      <p>Question:</p>
+      <input type="hidden" name="name" value="{{name}}">
+      <textarea name="question" cols="30" rows="2"></textarea>
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+  <br />
+  <br />
+  {% endblock %}
+</div>
+
+Student.html
+{% extends 'base.html' %}
+
+<!--Placeholder for head-->
+{% block head %}
+<title>Student</title>
+
+{% endblock %}
+
+<!--Placeholder for body-->
+{% block body %}
+<div class="container">
+  <div class="row">
+    <h4>Student page</h4>
+    Name = {{name}}
+    <br><br>
+    
+  </div>
+  <br>
+  <br>
+  {% endblock %}
+</div>
+
+

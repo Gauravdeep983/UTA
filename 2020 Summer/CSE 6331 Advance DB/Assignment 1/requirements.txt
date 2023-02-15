@@ -8,7 +8,7 @@ flask-uploads
 tinydb
 flask-bootstrap
 flask-nav
-werkzeug==0.16.1
+werkzeug==2.2.3
 ibm_db
 sqlalchemy
 ibm_db_sa

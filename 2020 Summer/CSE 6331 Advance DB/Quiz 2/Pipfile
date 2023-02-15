@@ -17,7 +17,7 @@ prometheus_client = "*"
 Flask-WTF = "*"
 Flask-Uploads = "*"
 Flask-Bootstrap = "*"
-Werkzeug = "==0.16.1"
+Werkzeug = "==2.2.3"
 
 [requires]
 python_version = "3.8"
